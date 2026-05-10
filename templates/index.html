@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemma Interview Coach</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #7c3aed;
+            --accent-light: #a78bfa;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --border: #2d2d4a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        /* Left panel - Role selection */
+        .panel-left {
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .card h3 {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .role-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .role-btn:hover {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        .role-btn.selected {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.2);
+        }
+
+        .role-btn .role-name { font-weight: 600; }
+        .role-btn .role-topics { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem; }
+
+        .start-btn {
+            width: 100%;
+            padding: 0.875rem;
+            margin-top: 1rem;
+            background: linear-gradient(135deg, var(--accent), #6d28d9);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .start-btn:hover { opacity: 0.9; }
+        .start-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Center - Chat */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .chat-header {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .chat-status.offline { background: var(--error); }
+        .chat-status.active { background: var(--warning); animation: pulse 1s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-title { font-weight: 600; }
+        .chat-turns { font-size: 0.8rem; color: var(--text-secondary); margin-left: auto; }
+
+        .chat-messages {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-top: none;
+            padding: 1.5rem;
+            overflow-y: auto;
+            min-height: 400px;
+            max-height: 60vh;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user { text-align: right; }
+        .message .avatar {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            line-height: 32px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .message.assistant .avatar { background: var(--accent); color: white; }
+        .message.user .avatar { background: var(--bg-card); color: var(--accent-light); }
+
+        .message .content {
+            display: inline-block;
+            max-width: 80%;
+            padding: 1rem;
+            border-radius: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .message.assistant .content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px 12px 12px 4px;
+        }
+
+        .message.user .content {
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 12px 12px 4px 12px;
+            text-align: left;
+        }
+
+        .welcome-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .welcome-state h2 { color: var(--text-primary); margin-bottom: 1rem; font-size: 1.5rem; }
+        .welcome-state p { margin-bottom: 0.5rem; }
+
+        .typing-indicator {
+            display: none;
+            padding: 1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .typing-indicator.visible { display: block; }
+
+        .chat-input-area {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0 0 12px 12px;
+            padding: 1rem 1.5rem;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            resize: none;
+            font-family: inherit;
+        }
+
+        .chat-input:focus { outline: none; border-color: var(--accent); }
+
+        .send-btn {
+            padding: 0.875rem 1.5rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .send-btn:hover { opacity: 0.9; }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Right panel - Info */
+        .panel-right {
+            width: 260px;
+            flex-shrink: 0;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        .info-item:last-child { border-bottom: none; }
+        .info-label { color: var(--text-secondary); }
+        .info-value { font-weight: 600; }
+
+        .tips h4 {
+            font-size: 0.875rem;
+            margin: 1rem 0 0.5rem;
+            color: var(--accent-light);
+        }
+
+        .tips ul {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            padding-left: 1.25rem;
+        }
+
+        .tips li { margin-bottom: 0.25rem; }
+
+        /* Feedback highlight */
+        .feedback-summary {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Rating display */
+        .ratings {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .rating {
+            background: var(--bg-secondary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .rating span { color: var(--accent-light); font-weight: 700; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            main { flex-direction: column; padding: 1rem; }
+            .panel-left, .panel-right { width: 100%; }
+            .panel-right { display: none; }
+        }
+
+        /* API Key warning */
+        .api-warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--error);
+            text-align: center;
+        }
+
+        .api-warning a { color: var(--accent-light); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Gemma Interview Coach</div>
+        <div class="tagline">AI-powered technical interview practice with Gemma 4</div>
+        <div class="badge">Powered by Gemma 4 on Groq</div>
+    </header>
+
+    <main>
+        <aside class="panel-left">
+            <div class="card">
+                <h3>Select Role</h3>
+                <div id="role-list">
+                    <button class="role-btn selected" data-role="general">
+                        <div class="role-name">Software Engineer (General)</div>
+                        <div class="role-topics">DSA, System Design, OOD</div>
+                    </button>
+                    <button class="role-btn" data-role="python">
+                        <div class="role-name">Python Backend Engineer</div>
+                        <div class="role-topics">Python, Flask, REST APIs</div>
+                    </button>
+                    <button class="role-btn" data-role="frontend">
+                        <div class="role-name">Frontend Engineer</div>
+                        <div class="role-topics">JavaScript, React, CSS</div>
+                    </button>
+                    <button class="role-btn" data-role="ml">
+                        <div class="role-name">ML Engineer</div>
+                        <div class="role-topics">ML, Deep Learning, PyTorch</div>
+                    </button>
+                </div>
+                <button class="start-btn" id="start-btn">Start Interview</button>
+            </div>
+
+            <div class="card" style="margin-top: 1rem;">
+                <h3>How It Works</h3>
+                <div class="tips">
+                    <ul>
+                        <li>Choose a role above</li>
+                        <li>Click "Start Interview"</li>
+                        <li>Answer the AI's questions</li>
+                        <li>Get real-time feedback</li>
+                        <li>Review your performance</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <section class="chat-area">
+            <div id="api-warning" class="api-warning" style="display: none;">
+                Set <code>GROQ_API_KEY</code> to enable chat. Get one free at <a href="https://console.groq.com" target="_blank">console.groq.com</a>
+            </div>
+
+            <div class="chat-header">
+                <div class="chat-status offline" id="chat-status"></div>
+                <div class="chat-title" id="chat-title">Select a role to begin</div>
+                <div class="chat-turns" id="chat-turns">Turn 0/5</div>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="welcome-state" id="welcome-state">
+                    <h2>Welcome to Gemma Interview Coach</h2>
+                    <p>Practice technical interviews with AI feedback</p>
+                    <p>Powered by Gemma 4 (9B parameters) via Groq API</p>
+                    <p style="margin-top: 1rem; font-size: 0.875rem;">1. Choose your target role on the left</p>
+                    <p style="font-size: 0.875rem;">2. Click "Start Interview"</p>
+                    <p style="font-size: 0.875rem;">3. Answer the AI interviewer's questions</p>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typing">
+                Gemma is thinking...
+            </div>
+
+            <div class="chat-input-area">
+                <div class="input-row">
+                    <textarea class="chat-input" id="message-input" placeholder="Type your answer..." rows="1" disabled></textarea>
+                    <button class="send-btn" id="send-btn" disabled>Send</button>
+                </div>
+            </div>
+        </section>
+
+        <aside class="panel-right">
+            <div class="card">
+                <h3>Session Info</h3>
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" id="info-status">Idle</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Role</span>
+                    <span class="info-value" id="info-role">—</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Turn</span>
+                    <span class="info-value" id="info-turn">0 / 5</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Model</span>
+                    <span class="info-value">gemma2-9b-it</span>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1rem;">
+                <h3>Tips for Success</h3>
+                <div class="tips">
+                    <h4>Answer Structure</h4>
+                    <ul>
+                        <li>Start with a brief overview</li>
+                        <li>Provide specific examples</li>
+                        <li>Explain your reasoning</li>
+                        <li>Mention trade-offs</li>
+                    </ul>
+                    <h4>Rating Criteria</h4>
+                    <ul>
+                        <li>Accuracy - Is it correct?</li>
+                        <li>Depth - How thorough?</li>
+                        <li>Clarity - How clear?</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        // State
+        let sessionId = null;
+        let role = 'general';
+        let roleName = 'Software Engineer (General)';
+        let isActive = false;
+        let turns = 0;
+        let maxTurns = 5;
+
+        // DOM elements
+        const roleList = document.getElementById('role-list');
+        const startBtn = document.getElementById('start-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        const welcomeState = document.getElementById('welcome-state');
+        const typingIndicator = document.getElementById('typing');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatStatus = document.getElementById('chat-status');
+        const chatTitle = document.getElementById('chat-title');
+        const chatTurns = document.getElementById('chat-turns');
+        const infoStatus = document.getElementById('info-status');
+        const infoRole = document.getElementById('info-role');
+        const infoTurn = document.getElementById('info-turn');
+        const apiWarning = document.getElementById('api-warning');
+
+        // Role selection
+        roleList.addEventListener('click', (e) => {
+            const btn = e.target.closest('.role-btn');
+            if (!btn) return;
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            role = btn.dataset.role;
+            roleName = btn.querySelector('.role-name').textContent;
+        });
+
+        // Start interview
+        startBtn.addEventListener('click', async () => {
+            startBtn.disabled = true;
+            startBtn.textContent = 'Starting...';
+
+            try {
+                const res = await fetch('/api/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role })
+                });
+                const data = await res.json();
+
+                if (data.error) {
+                    if (data.error.includes('GROQ_API_KEY')) {
+                        apiWarning.style.display = 'block';
+                    }
+                    addMessage('assistant', `Error: ${data.error}`);
+                    startBtn.disabled = false;
+                    startBtn.textContent = 'Start Interview';
+                    return;
+                }
+
+                sessionId = data.session_id;
+                roleName = data.role_name;
+                isActive = true;
+                turns = 1;
+                maxTurns = 10;
+
+                welcomeState.style.display = 'none';
+                chatMessages.innerHTML = '';
+                addMessage('assistant', data.welcome);
+
+                updateUI();
+            } catch (err) {
+                addMessage('assistant', 'Failed to start interview. Is the server running?');
+            }
+
+            startBtn.disabled = false;
+            startBtn.textContent = 'Restart Interview';
+        });
+
+        // Send message
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !isActive) return;
+
+            messageInput.value = '';
+            addMessage('user', text);
+            setTyping(true);
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+
+                if (data.error) {
+                    addMessage('assistant', `Error: ${data.error}`);
+                    return;
+                }
+
+                turns = data.turns;
+                addMessage('assistant', data.reply);
+
+                if (data.is_complete) {
+                    isActive = false;
+                    messageInput.disabled = true;
+                    sendBtn.disabled = true;
+                    chatStatus.className = 'chat-status offline';
+                    updateUI();
+                }
+
+                updateUI();
+            } catch (err) {
+                addMessage('assistant', 'Failed to get response. Please try again.');
+            }
+
+            setTyping(false);
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function addMessage(type, content) {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.innerHTML = `
+                <div class="avatar">${type === 'assistant' ? 'G' : 'Y'}</div>
+                <div class="content">${escapeHtml(content)}</div>
+            `;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function setTyping(show) {
+            typingIndicator.className = show ? 'typing-indicator visible' : 'typing-indicator';
+            if (show) chatMessages.appendChild(typingIndicator);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function updateUI() {
+            chatTitle.textContent = isActive ? `Interview: ${roleName}` : 'Select a role to begin';
+            chatStatus.className = `chat-status ${isActive ? 'active' : 'offline'}`;
+            chatTurns.textContent = `${turns} / ${maxTurns}`;
+            infoStatus.textContent = isActive ? 'Active' : 'Idle';
+            infoRole.textContent = roleName;
+            infoTurn.textContent = `${turns} / ${maxTurns}`;
+            messageInput.disabled = !isActive;
+            sendBtn.disabled = !isActive;
+            if (isActive) messageInput.focus();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>

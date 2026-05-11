@@ -18,7 +18,7 @@ app.secret_key = os.environ.get("SECRET_KEY", str(uuid.uuid4()))
 # Groq API configuration - free tier available at console.groq.com
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = "gemma2-9b-it"  # Free Gemma 4 model on Groq
+MODEL = "llama-3.3-70b-versatile"  # Free Gemma 4 model on Groq
 
 # Interview configuration
 INTERVIEW_ROLES = {

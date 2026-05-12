@@ -1,8 +1,12 @@
-# Gemma Interview Coach
+# AI Interview Coach
 
-**AI-powered technical interview practice powered by Gemma 4 (via Groq API)**
+**AI-powered technical interview practice powered by open-source LLMs (via Groq API)**
 
 An intelligent interview simulator that conducts realistic technical interviews, provides real-time feedback on your answers, and helps you improve across multiple engineering roles.
+
+## Live Demo
+
+🔗 **https://ed0e3f4f30e29f.lhr.life** (open in any browser, no login required)
 
 ## Features
 
@@ -11,7 +15,7 @@ An intelligent interview simulator that conducts realistic technical interviews,
 - **Structured Rating**: Answers rated on Accuracy, Depth, and Clarity (1-5)
 - **Session Persistence**: Full conversation history during each interview
 - **Dark-themed UI**: Modern, sleek interface optimized for focus
-- **Free Gemma 4**: Powered by Google's Gemma 2 9B model via Groq's free API tier
+- **Powered by Llama 3.3 70B**: One of the most capable open-source instruction-following models via Groq's free API tier
 
 ## How It Works
 
@@ -24,9 +28,9 @@ An intelligent interview simulator that conducts realistic technical interviews,
 ## Tech Stack
 
 - **Backend**: Flask (Python)
-- **AI Model**: Gemma 2 9B Instruct via Groq API
+- **AI Model**: Llama 3.3 70B Instruct via [Groq API](https://console.groq.com) (free tier)
 - **Frontend**: Vanilla HTML/CSS/JS (no framework)
-- **Deployment**: Docker-ready, ngrok for local tunneling
+- **Deployment**: Docker-ready, localhost.run for local tunneling
 
 ## Setup
 
@@ -39,14 +43,14 @@ An intelligent interview simulator that conducts realistic technical interviews,
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/gemma-interview-app.git
+git clone https://github.com/Kaymue-commits/gemma-interview-app.git
 cd gemma-interview-app
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Set your Groq API key
-export GROQ_API_KEY="gsk_xxxxxxxxxxxx"
+export GROQ_API_KEY="your_key_here"
 
 # Run the app
 flask run --port 5000
@@ -57,14 +61,14 @@ Open [http://localhost:5000](http://localhost:5000) in your browser.
 ### Docker
 
 ```bash
-docker build -t gemma-interview-app .
-docker run -p 5000:5000 -e GROQ_API_KEY=your_key gemma-interview-app
+docker build -t interview-coach .
+docker run -p 5000:5000 -e GROQ_API_KEY=your_key interview-coach
 ```
 
-### Expose with ngrok (for live demo)
+### Expose with localhost.run (for live demo)
 
 ```bash
-ngrok http 5000
+ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -R 80:localhost:5000 ssh.localhost.run
 ```
 
 ## Project Structure

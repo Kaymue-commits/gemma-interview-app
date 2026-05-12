@@ -1,6 +1,6 @@
 """
-Gemma Interview Coach - AI-powered technical interview practice
-Uses Groq API with Gemma 4 for real-time interview simulation and feedback.
+AI Interview Coach - AI-powered technical interview practice
+Uses Groq API with Llama 3.3 70B for real-time interview simulation and feedback.
 """
 
 import os
